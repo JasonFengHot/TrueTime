@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "23.0.0"
     defaultConfig {
         applicationId "com.instacart.library.truetime"
         minSdkVersion 14
@@ -17,18 +17,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
-repositories {
-    maven {
-        url "https://jitpack.io"
-    }
-}
 
 dependencies {
     compile project(path: ':library')
     compile project(path: ':library-extension-rx')
-//    compile 'com.github.instacart.truetime-android:library-extension-rx:master-SNAPSHOT'
 
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
