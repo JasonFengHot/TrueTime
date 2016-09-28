@@ -7,9 +7,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instacart.library.truetime.TrueTime;
-import com.instacart.library.truetime.TrueTimeRx;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -22,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.ismartv.turetime.TrueTime;
+import cn.ismartv.turetime.TrueTimeRx;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;

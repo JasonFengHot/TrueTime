@@ -9,7 +9,8 @@ import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.instacart.library.truetime.TrueTime;
+import cn.ismartv.turetime.TrueTime;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

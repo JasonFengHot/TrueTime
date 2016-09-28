@@ -1,4 +1,4 @@
-package cn.ismartv.truetime;
+package cn.ismartv.turetime;
 
 /*
  * Original work Copyright (C) 2008 The Android Open Source Project

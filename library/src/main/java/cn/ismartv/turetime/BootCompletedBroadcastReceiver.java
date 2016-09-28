@@ -1,9 +1,8 @@
-package cn.ismartv.truetime;
+package cn.ismartv.turetime;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class BootCompletedBroadcastReceiver
       extends BroadcastReceiver {

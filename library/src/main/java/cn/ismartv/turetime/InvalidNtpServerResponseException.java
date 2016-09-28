@@ -1,4 +1,4 @@
-package cn.ismartv.truetime;
+package cn.ismartv.turetime;
 
 import java.io.IOException;
 
