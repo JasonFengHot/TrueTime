@@ -1,4 +1,4 @@
-package com.instacart.library.truetime;
+package cn.ismartv.truetime;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

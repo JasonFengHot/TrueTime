@@ -1,4 +1,4 @@
-package com.instacart.library.truetime;
+package cn.ismartv.truetime;
 
 /*
  * Original work Copyright (C) 2008 The Android Open Source Project

@@ -1,4 +1,4 @@
-package com.instacart.library.truetime;
+package cn.ismartv.truetime;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,10 +8,10 @@ import static android.content.Context.MODE_PRIVATE;
 
 class DiskCacheClient {
 
-    private static final String KEY_CACHED_SHARED_PREFS = "com.instacart.library.truetime.shared_preferences";
-    private static final String KEY_CACHED_BOOT_TIME = "com.instacart.library.truetime.cached_boot_time";
-    private static final String KEY_CACHED_DEVICE_UPTIME = "com.instacart.library.truetime.cached_device_uptime";
-    private static final String KEY_CACHED_SNTP_TIME = "com.instacart.library.truetime.cached_sntp_time";
+    private static final String KEY_CACHED_SHARED_PREFS = "cn.ismartv.truetime.shared_preferences";
+    private static final String KEY_CACHED_BOOT_TIME = "cn.ismartv.truetime.cached_boot_time";
+    private static final String KEY_CACHED_DEVICE_UPTIME = "cn.ismartv.truetime.cached_device_uptime";
+    private static final String KEY_CACHED_SNTP_TIME = "cn.ismartv.truetime.cached_sntp_time";
 
     private static final String TAG = DiskCacheClient.class.getSimpleName();
 
