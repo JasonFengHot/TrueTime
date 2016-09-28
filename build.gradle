@@ -33,5 +33,5 @@ ext {
 
     supportLibraryVersion = '23.0.0'
 
-    moduleVersion = '1.0'
+    moduleVersion = '1.1'
 }

@@ -2,6 +2,8 @@ package cn.ismartv.turetime;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -22,7 +24,8 @@ public class TrueTime {
      */
     public static Date now() {
         if (!isInitialized()) {
-            throw new IllegalStateException("You need to call init() on TrueTime at least once.");
+            Log.e(TAG, "You need to call init() on TrueTime at least once.");
+            return new Date();
         }
 
         long cachedSntpTime = _getCachedSntpTime();
@@ -94,8 +97,8 @@ public class TrueTime {
 
     private static long _getCachedDeviceUptime() {
         long cachedDeviceUptime = SNTP_CLIENT.wasInitialized()
-                                  ? SNTP_CLIENT.getCachedDeviceUptime()
-                                  : DISK_CACHE_CLIENT.getCachedDeviceUptime();
+                ? SNTP_CLIENT.getCachedDeviceUptime()
+                : DISK_CACHE_CLIENT.getCachedDeviceUptime();
 
         if (cachedDeviceUptime == 0L) {
             throw new RuntimeException("expected SNTP time from last boot to be cached. couldn't find it.");
@@ -106,8 +109,8 @@ public class TrueTime {
 
     private static long _getCachedSntpTime() {
         long cachedSntpTime = SNTP_CLIENT.wasInitialized()
-                              ? SNTP_CLIENT.getCachedSntpTime()
-                              : DISK_CACHE_CLIENT.getCachedSntpTime();
+                ? SNTP_CLIENT.getCachedSntpTime()
+                : DISK_CACHE_CLIENT.getCachedSntpTime();
 
         if (cachedSntpTime == 0L) {
             throw new RuntimeException("expected SNTP time from last boot to be cached. couldn't find it.");
