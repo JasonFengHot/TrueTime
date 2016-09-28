@@ -18,10 +18,13 @@ package com.instacart.library.truetime;
  */
 
 import android.os.SystemClock;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Simple SNTP client class for retrieving network time.
@@ -55,104 +58,129 @@ public class SntpClient {
      * @param ntpHost         host name of the server.
      * @param timeoutInMillis network timeout in milliseconds.
      */
+
+
     void requestTime(String ntpHost, int timeoutInMillis) throws IOException {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(timeoutInMillis, TimeUnit.MILLISECONDS)
+                .build();
+        Request request = new Request.Builder()
+                .url(ntpHost)
+                .build();
 
-        DatagramSocket socket = null;
+        long responseTicks = SystemClock.elapsedRealtime();
+        Response response = client.newCall(request).execute();
+        long sentTime = Long.parseLong(response.header("OkHttp-Sent-Millis"));
+        long receivedTime = Long.parseLong(response.header("OkHttp-Received-Millis"));
+        long responseTime = new Double(response.body().string()).longValue();
+        long clockOffset = receivedTime - sentTime;
 
-        try {
 
-            byte[] buffer = new byte[NTP_PACKET_SIZE];
-            InetAddress address = InetAddress.getByName(ntpHost);
+        _sntpInitialized = true;
+        TrueLog.i(TAG, "---- SNTP successful response from " + ntpHost);
 
-            DatagramPacket request = new DatagramPacket(buffer, buffer.length, address, NTP_PORT);
+        _cachedSntpTime = responseTime + clockOffset;
+        _cachedDeviceUptime = responseTicks;
 
-            _writeVersion(buffer);
-
-            // -----------------------------------------------------------------------------------
-            // get current time and write it to the request packet
-
-            long requestTime = System.currentTimeMillis();
-            long requestTicks = SystemClock.elapsedRealtime();
-
-            _writeTimeStamp(buffer, INDEX_TRANSMIT_TIME, requestTime);
-
-            socket = new DatagramSocket();
-            socket.setSoTimeout(timeoutInMillis);
-            socket.send(request);
-
-            // -----------------------------------------------------------------------------------
-            // read the response
-
-            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-            socket.receive(response);
-
-            long responseTicks = SystemClock.elapsedRealtime();
-
-            // -----------------------------------------------------------------------------------
-            // extract the results
-
-            long originateTime = _readTimeStamp(buffer, INDEX_ORIGINATE_TIME);     // T0
-            long receiveTime = _readTimeStamp(buffer, INDEX_RECEIVE_TIME);         // T1
-            long transmitTime = _readTimeStamp(buffer, INDEX_TRANSMIT_TIME);       // T2
-
-            // See here for the algorithm used:
-            // https://en.wikipedia.org/wiki/Network_Time_Protocol#Clock_synchronization_algorithm
-            long responseTime = requestTime + (responseTicks - requestTicks);       // T3
-
-            // -----------------------------------------------------------------------------------
-            // check validity of response
-
-            long rootDelay = _read(buffer, INDEX_ROOT_DELAY);
-            if (rootDelay > 100) {
-                throw new InvalidNtpServerResponseException("Invalid response from NTP server. Root delay violation " +
-                                                            rootDelay);
-            }
-
-            long rootDispersion = _read(buffer, INDEX_ROOT_DISPERSION);
-            if (rootDispersion > 100) {
-                throw new InvalidNtpServerResponseException(
-                      "Invalid response from NTP server. Root dispersion violation " + rootDispersion);
-            }
-
-            final byte mode = (byte) (buffer[0] & 0x7);
-            if (mode != 4 && mode != 5) {
-                throw new InvalidNtpServerResponseException("untrusted mode value for TrueTime: " + mode);
-            }
-
-            final int stratum = buffer[1] & 0xff;
-            if (stratum < 1 || stratum > 15) {
-                throw new InvalidNtpServerResponseException("untrusted stratum value for TrueTime: " + stratum);
-            }
-
-            final byte leap = (byte) ((buffer[0] >> 6) & 0x3);
-            if (leap == 3) {
-                throw new InvalidNtpServerResponseException("unsynchronized server responded for TrueTime");
-            }
-
-            long delay = Math.abs((responseTime - originateTime) - (transmitTime - receiveTime));
-            if (delay >= 100) {
-                throw new InvalidNtpServerResponseException("Server response delay too large for comfort " + delay);
-            }
-
-            _sntpInitialized = true;
-            TrueLog.i(TAG, "---- SNTP successful response from " + ntpHost);
-
-            // -----------------------------------------------------------------------------------
-            // θ
-            long clockOffset = ((receiveTime - originateTime) + (transmitTime - responseTime)) / 2;
-
-            _cachedSntpTime = responseTime + clockOffset;
-            _cachedDeviceUptime = responseTicks;
-
-        } catch (Exception e) {
-            TrueLog.d(TAG, "---- SNTP request failed for " + ntpHost);
-            throw e;
-        } finally {
-            if (socket != null) {
-                socket.close();
-            }
-        }
     }
+//    void requestTime(String ntpHost, int timeoutInMillis) throws IOException {
+//
+//        DatagramSocket socket = null;
+//
+//        try {
+//
+//            byte[] buffer = new byte[NTP_PACKET_SIZE];
+//            InetAddress address = InetAddress.getByName(ntpHost);
+//
+//            DatagramPacket request = new DatagramPacket(buffer, buffer.length, address, NTP_PORT);
+//
+//            _writeVersion(buffer);
+//
+//            // -----------------------------------------------------------------------------------
+//            // get current time and write it to the request packet
+//
+//            long requestTime = System.currentTimeMillis();
+//            long requestTicks = SystemClock.elapsedRealtime();
+//
+//            _writeTimeStamp(buffer, INDEX_TRANSMIT_TIME, requestTime);
+//
+//            socket = new DatagramSocket();
+//            socket.setSoTimeout(timeoutInMillis);
+//            socket.send(request);
+//
+//            // -----------------------------------------------------------------------------------
+//            // read the response
+//
+//            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+//            socket.receive(response);
+//
+//            long responseTicks = SystemClock.elapsedRealtime();
+//
+//            // -----------------------------------------------------------------------------------
+//            // extract the results
+//
+//            long originateTime = _readTimeStamp(buffer, INDEX_ORIGINATE_TIME);     // T0
+//            long receiveTime = _readTimeStamp(buffer, INDEX_RECEIVE_TIME);         // T1
+//            long transmitTime = _readTimeStamp(buffer, INDEX_TRANSMIT_TIME);       // T2
+//
+//            // See here for the algorithm used:
+//            // https://en.wikipedia.org/wiki/Network_Time_Protocol#Clock_synchronization_algorithm
+//            long responseTime = requestTime + (responseTicks - requestTicks);       // T3
+//
+//            // -----------------------------------------------------------------------------------
+//            // check validity of response
+//
+//            long rootDelay = _read(buffer, INDEX_ROOT_DELAY);
+//            if (rootDelay > 100) {
+//                throw new InvalidNtpServerResponseException("Invalid response from NTP server. Root delay violation " +
+//                                                            rootDelay);
+//            }
+//
+//            long rootDispersion = _read(buffer, INDEX_ROOT_DISPERSION);
+//            if (rootDispersion > 100) {
+//                throw new InvalidNtpServerResponseException(
+//                      "Invalid response from NTP server. Root dispersion violation " + rootDispersion);
+//            }
+//
+//            final byte mode = (byte) (buffer[0] & 0x7);
+//            if (mode != 4 && mode != 5) {
+//                throw new InvalidNtpServerResponseException("untrusted mode value for TrueTime: " + mode);
+//            }
+//
+//            final int stratum = buffer[1] & 0xff;
+//            if (stratum < 1 || stratum > 15) {
+//                throw new InvalidNtpServerResponseException("untrusted stratum value for TrueTime: " + stratum);
+//            }
+//
+//            final byte leap = (byte) ((buffer[0] >> 6) & 0x3);
+//            if (leap == 3) {
+//                throw new InvalidNtpServerResponseException("unsynchronized server responded for TrueTime");
+//            }
+//
+//            long delay = Math.abs((responseTime - originateTime) - (transmitTime - receiveTime));
+//            if (delay >= 100) {
+//                throw new InvalidNtpServerResponseException("Server response delay too large for comfort " + delay);
+//            }
+//
+//            _sntpInitialized = true;
+//            TrueLog.i(TAG, "---- SNTP successful response from " + ntpHost);
+//
+//            // -----------------------------------------------------------------------------------
+//            // θ
+//            long clockOffset = ((receiveTime - originateTime) + (transmitTime - responseTime)) / 2;
+//
+//            _cachedSntpTime = responseTime + clockOffset;
+//            _cachedDeviceUptime = responseTicks;
+//
+//        } catch (Exception e) {
+//            TrueLog.d(TAG, "---- SNTP request failed for " + ntpHost);
+//            throw e;
+//        } finally {
+//            if (socket != null) {
+//                socket.close();
+//            }
+//        }
+//    }
 
     /**
      * @return time value computed from NTP server response
@@ -236,14 +264,14 @@ public class SntpClient {
         byte b3 = buffer[offset + 3];
 
         return ((long) ui(b0) << 24) +
-               ((long) ui(b1) << 16) +
-               ((long) ui(b2) << 8) +
-               (long) ui(b3);
+                ((long) ui(b1) << 16) +
+                ((long) ui(b2) << 8) +
+                (long) ui(b3);
     }
 
     /***
      * Convert byte to unsigned int.
-     *
+     * <p>
      * Java only has signed types so we have to do
      * more work to get unsigned ops
      *

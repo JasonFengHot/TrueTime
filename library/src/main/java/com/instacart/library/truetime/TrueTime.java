@@ -77,10 +77,10 @@ public class TrueTime {
     // -----------------------------------------------------------------------------------
 
     protected void initialize(String ntpHost) throws IOException {
-        if (isInitialized()) {
-            TrueLog.i(TAG, "---- TrueTime already initialized from previous boot/init");
-            return;
-        }
+//        if (isInitialized()) {
+//            TrueLog.i(TAG, "---- TrueTime already initialized from previous boot/init");
+//            return;
+//        }
         SNTP_CLIENT.requestTime(ntpHost, _udpSocketTimeoutInMillis);
     }
 
