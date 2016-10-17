@@ -1,4 +1,4 @@
-package cn.ismartv.turetime;
+package cn.ismartv.truetime;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

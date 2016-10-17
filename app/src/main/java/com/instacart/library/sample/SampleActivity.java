@@ -9,7 +9,7 @@ import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.ismartv.turetime.TrueTime;
+import cn.ismartv.truetime.TrueTime;
 
 import java.io.IOException;
 import java.text.DateFormat;
