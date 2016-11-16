@@ -5,7 +5,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-def projectName = "ismartv_turetime"
+def projectName = "ismartv_truetime"
 def versionTag = rootProject.ext.moduleVersion
 def groupId = "cn.ismartv.truetime"
 def siteUrl = 'git@github.com:JasonFengIce/truetime-android.git'
@@ -32,7 +32,7 @@ bintray {
     pkg {
         repo = 'maven'
         name = projectName
-        desc = 'Ismartv TureTime'
+        desc = 'Ismartv TrueTime'
         websiteUrl = siteUrl
         issueTrackerUrl = 'https://github.com/bintray/bintray-examples/issues'
         vcsUrl = gitUrl
