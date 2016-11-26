@@ -20,6 +20,7 @@ package cn.ismartv.truetime;
 import android.os.SystemClock;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -72,7 +73,7 @@ public class SntpClient {
         Response response = client.newCall(request).execute();
         long sentTime = Long.parseLong(response.header("OkHttp-Sent-Millis"));
         long receivedTime = Long.parseLong(response.header("OkHttp-Received-Millis"));
-        long responseTime = new Double(response.body().string()).longValue();
+        long responseTime = new BigDecimal(response.body().string()).longValue();
         long clockOffset = receivedTime - sentTime;
 
 
