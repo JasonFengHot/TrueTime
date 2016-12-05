@@ -18,6 +18,7 @@ package cn.ismartv.truetime;
  */
 
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -71,14 +72,14 @@ public class SntpClient {
 
         long responseTicks = SystemClock.elapsedRealtime();
         Response response = client.newCall(request).execute();
-        long sentTime = Long.parseLong(response.header("OkHttp-Sent-Millis"));
-        long receivedTime = Long.parseLong(response.header("OkHttp-Received-Millis"));
+        long sentTime = response.sentRequestAtMillis();
+        long receivedTime = response.receivedResponseAtMillis();
         long responseTime = new BigDecimal(response.body().string()).longValue();
         long clockOffset = receivedTime - sentTime;
 
 
         _sntpInitialized = true;
-        TrueLog.i(TAG, "---- SNTP successful response from " + ntpHost);
+        Log.i(TAG, "---- SNTP successful response from " + ntpHost);
 
         _cachedSntpTime = responseTime + clockOffset;
         _cachedDeviceUptime = responseTicks;

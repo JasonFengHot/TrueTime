@@ -17,7 +17,7 @@ public class TrueTimeRx
 
     private static final TrueTimeRx RX_INSTANCE = new TrueTimeRx();
 
-    private int _retryCount = 50;
+    private int _retryCount = 0;
 
     public static TrueTimeRx build() {
         return RX_INSTANCE;

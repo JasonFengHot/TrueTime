@@ -38,7 +38,7 @@ public class Sample2Activity
     TextView timePST;
     @Bind(R.id.tt_time_device)
     TextView timeDeviceTime;
-    final List<String> ntpHosts = Arrays.asList("http://skytest.tvxio.com/v3_0/YOGA/tos/api/currenttime/");
+    final List<String> ntpHosts = Arrays.asList("http://sky.tvxio.com/api/currenttime/");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
