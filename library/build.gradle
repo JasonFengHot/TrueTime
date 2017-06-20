@@ -69,6 +69,7 @@ android {
         abortOnError false
     }
 
+    buildToolsVersion '25.0.0'
 }
 
 dependencies {
@@ -107,3 +108,19 @@ task findConventions << {
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
+
+task clearJar(type: Delete) {
+    delete 'build/sdk/sdk.jar'
+}
+
+task exportJar(type: Jar) {
+    baseName 'sdk'
+    from 'build/intermediates/classes/release'
+    destinationDir = file('build/sdk/')
+    exclude{ it.name.equals('BuildConfig.class');}
+    exclude{ it.name.equals('R.class');}
+    exclude{ it.name.equals('android');}
+    exclude{ it.name.startsWith('R$');}
+}
+
+exportJar.dependsOn(clearJar, build)
